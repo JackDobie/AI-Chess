@@ -13,14 +13,14 @@ class GameStatus;
 class Gameplay;
 class Move;
 
-struct PieceInPostion
+struct PieceInPosition
 {
 	std::shared_ptr<Piece> piece;
 	int col;
 	int row;
 };
 
-typedef vector<PieceInPostion> vecPieces;
+typedef vector<PieceInPosition> vecPieces;
 
 class ChessPlayer
 {
@@ -31,7 +31,7 @@ public:
 	void			setAI() { m_bAI = true; }
 	bool			isAI() { return m_bAI; }
 	unsigned int	getAllLivePieces(vecPieces& vpieces);
-	vector<std::shared_ptr<Move>>	getValidMovesForPiece(PieceInPostion pip);
+	vector<std::shared_ptr<Move>>	getValidMovesForPiece(PieceInPosition pip);
 	bool			chooseAIMove(std::shared_ptr<Move>* moveToMake);
 
 protected:
@@ -43,5 +43,12 @@ private:
 	GameStatus* m_pGameStatus;
 	Gameplay*	m_pGamePlay;
 	bool		m_bAI;
+
+	int MiniMax(PieceInPosition piece, int depth, int alpha, int beta, bool maximisingPlayer);
+
+	/*vector<std::shared_ptr<Move>> MiniMax(int depth);
+	vector<std::shared_ptr<Move>> MinMove(vector<std::shared_ptr<Move>> moves, int depth, int depthLimit);
+	vector<std::shared_ptr<Move>> MaxMove(vector<std::shared_ptr<Move>> moves, int depth, int depthLimit);*/
+	vector<shared_ptr<Piece>> GetOpponentPieces();
 };
 
