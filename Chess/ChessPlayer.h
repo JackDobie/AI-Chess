@@ -20,6 +20,13 @@ struct PieceInPosition
 	int row;
 };
 
+struct ScoredMove
+{
+	PieceInPosition* piece;
+	Move* move;
+	int score;
+};
+
 typedef vector<PieceInPosition> vecPieces;
 
 class ChessPlayer
@@ -44,11 +51,8 @@ private:
 	Gameplay*	m_pGamePlay;
 	bool		m_bAI;
 
-	int MiniMax(PieceInPosition piece, int depth, int alpha, int beta, bool maximisingPlayer);
+	ScoredMove* MiniMax(PieceInPosition* piece, Move* m, int depth, int alpha, int beta, bool maximisingPlayer);
 
-	/*vector<std::shared_ptr<Move>> MiniMax(int depth);
-	vector<std::shared_ptr<Move>> MinMove(vector<std::shared_ptr<Move>> moves, int depth, int depthLimit);
-	vector<std::shared_ptr<Move>> MaxMove(vector<std::shared_ptr<Move>> moves, int depth, int depthLimit);*/
 	vector<shared_ptr<Piece>> GetOpponentPieces();
 };
 
