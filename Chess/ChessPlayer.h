@@ -22,8 +22,6 @@ struct PieceInPosition
 
 struct ScoredMove
 {
-	PieceInPosition* piece;
-	Move* move;
 	int score;
 };
 
@@ -51,7 +49,7 @@ private:
 	Gameplay*	m_pGamePlay;
 	bool		m_bAI;
 
-	ScoredMove* MiniMax(PieceInPosition* piece, Move* m, int depth, int alpha, int beta, bool maximisingPlayer);
+	int MiniMax(Move m, int depth, int alpha, int beta, bool maximisingPlayer);
 
 	vector<shared_ptr<Piece>> GetOpponentPieces();
 };
