@@ -43,6 +43,8 @@ Board* Board::hardCopy()
 	return pBoard;
 }
 
+// TODO: change this so it evaluates board after x moves. currently just evaluates current board
+// possibly pass in a list of moves and then apply them?
 int Board::evaluateBoard(PieceColor colour)
 {
 	std::vector<std::shared_ptr<Piece>> whitePieces = std::vector<std::shared_ptr<Piece>>();
@@ -63,10 +65,6 @@ int Board::evaluateBoard(PieceColor colour)
 				{
 					blackPieces.push_back(p);
 				}
-			}
-			else
-			{
-				printf("hello :)");
 			}
 		}
 	}

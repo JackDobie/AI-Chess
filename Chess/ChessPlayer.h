@@ -37,7 +37,7 @@ public:
 	bool			isAI() { return m_bAI; }
 	unsigned int	getAllLivePieces(vecPieces& vpieces);
 	vector<std::shared_ptr<Move>>	getValidMovesForPiece(PieceInPosition pip);
-	bool			chooseAIMove(std::shared_ptr<Move>* moveToMake);
+	Move			chooseAIMove();// Move* moveToMake);
 
 protected:
 	PieceColor		getColour() { return m_colour; }

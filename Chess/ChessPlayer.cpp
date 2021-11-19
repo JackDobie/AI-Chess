@@ -63,7 +63,7 @@ vector<std::shared_ptr<Move>> ChessPlayer::getValidMovesForPiece(PieceInPosition
 
 // chooseAIMove
 // in this method - for an AI chess player - choose a move to make. This is called once per play. 
-bool ChessPlayer::chooseAIMove(std::shared_ptr<Move>* moveToMake)
+Move ChessPlayer::chooseAIMove()
 {
 	vecPieces vPieces;
 	unsigned int piecesAvailable = getAllLivePieces(vPieces);
@@ -76,33 +76,23 @@ bool ChessPlayer::chooseAIMove(std::shared_ptr<Move>* moveToMake)
 		for (std::shared_ptr<Move> m : moves)
 		{
 			int move = MiniMax(*m.get(), 6, 0, 0, true);
-			//if (bestScore == INT_MIN)
-			//{
 			if (move > bestScore)
 			{
 				bestScore = move;
 				bestMove = *m.get();
 			}
-			//}
-			/*else
-			{
-				if (m->score > bestMove->score)
-				{
-					bestMove = m;
-				}
-			}*/
 		}
 	}
 	if (bestScore != INT_MIN)
 	{
 		if (bestMove.getDestinationPosition().first != NULL)
 		{
-			*moveToMake = shared_ptr<Move>(&bestMove);
-			return true;
+			return bestMove;
 		}
 	}
 
-	return false; // if there are no moves to make return false
+	return Move(); // returning an empty Move will show that a move was not taken
+	//return false; // if there are no moves to make return false
 }
 
 int ChessPlayer::MiniMax(Move m, int depth, int alpha, int beta, bool maximisingPlayer)

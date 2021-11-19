@@ -546,21 +546,20 @@ void newAITurn()
 		return;
 
 	// decide and make the move
-	std::shared_ptr<Move> move;
-	bool moveMade = player->chooseAIMove(&move);
-	if (!moveMade)
+    Move move = player->chooseAIMove();
+    if(move == Move())
 	{
 		return; // TODO: if this is the case - what next? The chess engine should have detected a checkmate prior to this. 
 	}
 
 	Sleep(SLEEP_TIME_MILLISECONDS);
 
-	selectedRow = move->getOriginPosition().first;
-	selectedCol = move->getOriginPosition().second;
+	selectedRow = move.getOriginPosition().first;
+	selectedCol = move.getOriginPosition().second;
 	keyFunction(' ', 0, 0);
 
-	moveToRow = move->getDestinationPosition().first;
-	moveToCol = move->getDestinationPosition().second;
+	moveToRow = move.getDestinationPosition().first;
+	moveToCol = move.getDestinationPosition().second;
 	keyFunction(' ', 0, 0);
 
 	ai_moving = true;
