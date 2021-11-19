@@ -8,6 +8,7 @@ it contains Square objects (which contain a piece, or is empty).
 
 #include "Square.h"
 #include <memory>
+#include <vector>
 
 class Board
 {
@@ -31,6 +32,7 @@ public:
 
 		Board* hardCopy();
 		
+		int evaluateBoard(PieceColor colour);
 };
 
 #endif

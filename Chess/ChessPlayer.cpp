@@ -73,7 +73,12 @@ bool ChessPlayer::chooseAIMove(std::shared_ptr<Move>* moveToMake)
 	{
 		ScoredMove* m = MiniMax(&p, nullptr, 6, 0, 0, true);
 		if (bestMove == nullptr)
-			bestMove = m;
+		{
+			if (m->score != NULL)
+			{
+				bestMove = m;
+			}
+		}
 		else
 		{
 			if (m->score > bestMove->score)
@@ -82,26 +87,37 @@ bool ChessPlayer::chooseAIMove(std::shared_ptr<Move>* moveToMake)
 			}
 		}
 	}
+	if (bestMove != nullptr)
+	{
+		if (bestMove->move != NULL)
+		{
+			*moveToMake = shared_ptr<Move>(bestMove->move);
+			return true;
+		}
+	}
 
 	return false; // if there are no moves to make return false
 }
 
 ScoredMove* ChessPlayer::MiniMax(PieceInPosition* piece, Move* m, int depth, int alpha, int beta, bool maximisingPlayer)
 {
+	ScoredMove* bestMove = new ScoredMove();
+	bestMove->piece = piece;
+	bestMove->move = m;
+
 	if (depth <= 0)
 	{
 		// return evaluation of piece
+		bestMove->score = m_pBoard->evaluateBoard(m_colour);
+		return bestMove;
 	}
 
 	// find valid moves for the current piece
 	vector<std::shared_ptr<Move>> pieceMoves = getValidMovesForPiece(*piece);
 
-	ScoredMove* bestMove = new ScoredMove();
-	bestMove->piece = piece;
-	bestMove->move = m;
 	if (maximisingPlayer)
 	{
-		int maxEval = -INFINITY;
+		int maxEval = INT_MIN;
 		for (std::shared_ptr<Move> m : pieceMoves)
 		{
 			// create a pieceinposition from move and pass both into minimax
@@ -113,7 +129,7 @@ ScoredMove* ChessPlayer::MiniMax(PieceInPosition* piece, Move* m, int depth, int
 			if (eval > maxEval)
 			{
 				bestMove->score = move->score;
-				if (bestMove->move == nullptr) bestMove->move = move->move;
+				/*if (bestMove->move == nullptr) */bestMove->move = move->move;
 				maxEval = eval;
 			}
 			maxEval = max(maxEval, eval);
@@ -125,7 +141,7 @@ ScoredMove* ChessPlayer::MiniMax(PieceInPosition* piece, Move* m, int depth, int
 	}
 	else
 	{
-		int minEval = INFINITY;
+		int minEval = INT_MAX;
 		for (std::shared_ptr<Move> m : pieceMoves)
 		{
 			PieceInPosition* p = piece;
