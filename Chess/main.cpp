@@ -549,17 +549,17 @@ void newAITurn()
     Move move = player->chooseAIMove();
     std::pair<int, int> originPos = move.getOriginPosition();
     std::pair<int, int> destinationPos = move.getDestinationPosition();
-    while (originPos == std::pair<int, int>() && destinationPos == std::pair<int, int>())
+    std::pair<int, int> emptypair = std::pair<int, int>();
+    if (originPos == emptypair && destinationPos == emptypair)
+    {
+        return;
+    }
+    /*while (originPos == emptypair && destinationPos == emptypair)
     {
         move = player->chooseAIMove();
         originPos = move.getOriginPosition();
         destinationPos = move.getDestinationPosition();
-    }
- //   while(move == Move())
-	//{
- //       move = player->chooseAIMove();
-	//	//return; // TODO: if this is the case - what next? The chess engine should have detected a checkmate prior to this. 
-	//}
+    }*/
 
 	Sleep(SLEEP_TIME_MILLISECONDS);
 

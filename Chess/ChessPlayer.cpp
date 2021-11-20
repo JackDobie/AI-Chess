@@ -75,7 +75,7 @@ Move ChessPlayer::chooseAIMove()
 		vector<std::shared_ptr<Move>> moves = getValidMovesForPiece(p);
 		for (std::shared_ptr<Move> m : moves)
 		{
-			int move = MiniMax(*m.get(), 6, 0, 0, true);
+			int move = MiniMax(*m.get(), vector<Move>(), 6, 0, 0, true);
 			std::pair<int, int> originPos = m.get()->getOriginPosition();
 			std::pair<int, int> destinationPos = m.get()->getDestinationPosition();
 			if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
@@ -102,12 +102,12 @@ Move ChessPlayer::chooseAIMove()
 	//return false; // if there are no moves to make return false
 }
 
-int ChessPlayer::MiniMax(Move m, int depth, int alpha, int beta, bool maximisingPlayer)
+int ChessPlayer::MiniMax(Move m, vector<Move> moves, int depth, int alpha, int beta, bool maximisingPlayer)
 {
 	if (depth <= 0)
 	{
 		// return evaluation of piece
-		return m_pBoard->evaluateBoard(m_colour);
+		return m_pBoard->evaluateBoard(m_colour, moves);
 	}
 
 	// find valid moves for the current piece
@@ -122,7 +122,9 @@ int ChessPlayer::MiniMax(Move m, int depth, int alpha, int beta, bool maximising
 		int maxEval = INT_MIN;
 		for (std::shared_ptr<Move> m : pieceMoves)
 		{
-			int move = MiniMax(*m.get(), depth - 1, alpha, beta, false);
+			vector<Move> movesTemp = moves;
+			movesTemp.push_back(*m.get());
+			int move = MiniMax(*m.get(), movesTemp, depth - 1, alpha, beta, false);
 			int eval = move;
 			if (eval > maxEval)
 			{
@@ -140,7 +142,9 @@ int ChessPlayer::MiniMax(Move m, int depth, int alpha, int beta, bool maximising
 		int minEval = INT_MAX;
 		for (std::shared_ptr<Move> m : pieceMoves)
 		{
-			int move = MiniMax(*m.get(), depth - 1, alpha, beta, true);
+			vector<Move> movesTemp = moves;
+			movesTemp.push_back(*m.get());
+			int move = MiniMax(*m.get(), movesTemp, depth - 1, alpha, beta, true);
 			int eval = move;
 			if (eval < minEval)
 			{

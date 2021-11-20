@@ -49,7 +49,7 @@ private:
 	Gameplay*	m_pGamePlay;
 	bool		m_bAI;
 
-	int MiniMax(Move m, int depth, int alpha, int beta, bool maximisingPlayer);
+	int MiniMax(Move m, vector<Move> moves, int depth, int alpha, int beta, bool maximisingPlayer);
 
 	vector<shared_ptr<Piece>> GetOpponentPieces();
 };
