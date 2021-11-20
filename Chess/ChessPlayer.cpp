@@ -76,16 +76,23 @@ Move ChessPlayer::chooseAIMove()
 		for (std::shared_ptr<Move> m : moves)
 		{
 			int move = MiniMax(*m.get(), 6, 0, 0, true);
-			if (move > bestScore)
+			std::pair<int, int> originPos = m.get()->getOriginPosition();
+			std::pair<int, int> destinationPos = m.get()->getDestinationPosition();
+			if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
 			{
-				bestScore = move;
-				bestMove = *m.get();
+				if (move > bestScore)
+				{
+					bestScore = move;
+					bestMove = *m.get();
+				}
 			}
 		}
 	}
 	if (bestScore != INT_MIN)
 	{
-		if (bestMove.getDestinationPosition().first != NULL)
+		std::pair<int, int> originPos = bestMove.getOriginPosition();
+		std::pair<int, int> destinationPos = bestMove.getDestinationPosition();
+		if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
 		{
 			return bestMove;
 		}
