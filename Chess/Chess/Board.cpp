@@ -45,7 +45,7 @@ Board* Board::hardCopy()
 
 // TODO: change this so it evaluates board after x moves. currently just evaluates current board
 // possibly pass in a list of moves and then apply them?
-int Board::evaluateBoard(PieceColor colour, std::vector<Move> moves)
+int Board::evaluateBoard(PieceColor colour, Move* moves, int movesCount)
 {
 	// save the squares of the current board
 	Square newBoard[WIDTH][HEIGHT];
@@ -58,19 +58,33 @@ int Board::evaluateBoard(PieceColor colour, std::vector<Move> moves)
 	}
 
 	// simulate what the board would be like after the moves
-	for (Move m : moves)
+	for (int i = 0; i < movesCount; i++)
 	{
-		//std::shared_ptr<Piece> p = m.getMovedPiece();
-		if (m.getType() == MoveType::NORMAL)
+		Move m = moves[i];
+		std::shared_ptr<Piece> movedPiece = m.getMovedPiece();
+		int fromRow = m.getOriginPosition().first;
+		int fromCol = m.getOriginPosition().second;
+		int toRow = m.getDestinationPosition().first;
+		int toCol = m.getDestinationPosition().second;
+
+		switch (m.getType())
 		{
-			newBoard[m.getOriginPosition().first][m.getOriginPosition().second].removeOccupyingPiece();
-			newBoard[m.getDestinationPosition().first][m.getDestinationPosition().second].occupySquare(m.getMovedPiece());
-		}
-		else if (m.getType() == MoveType::CAPTURE)
-		{
-			newBoard[m.getOriginPosition().first][m.getOriginPosition().second].removeOccupyingPiece();
-			newBoard[m.getDestinationPosition().first][m.getDestinationPosition().second].removeOccupyingPiece();
-			newBoard[m.getDestinationPosition().first][m.getDestinationPosition().second].occupySquare(m.getMovedPiece());
+		case MoveType::NORMAL:
+			newBoard[fromRow][fromCol].removeOccupyingPiece();
+			newBoard[toRow][toCol].occupySquare(movedPiece);
+			break;
+		case MoveType::CAPTURE:
+		case MoveType::EN_PASSANT:
+			newBoard[fromRow][fromCol].removeOccupyingPiece();
+			newBoard[toRow][toCol].removeOccupyingPiece();
+			newBoard[toRow][toCol].occupySquare(movedPiece);
+			break;
+		case MoveType::CASTLING:
+			int rookOriginCol = ((toCol < fromCol) ? MIN_COL_INDEX : MAX_COL_INDEX - 1);
+			int rookDestCol = ((toCol < fromCol) ? fromCol - 1 : fromCol + 1);
+			newBoard[toRow][toCol].occupySquare(newBoard[fromRow][fromCol].removeOccupyingPiece());
+			newBoard[toRow][rookDestCol].occupySquare(newBoard[fromRow][rookOriginCol].removeOccupyingPiece());
+			break;
 		}
 	}
 

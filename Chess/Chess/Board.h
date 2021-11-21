@@ -10,6 +10,7 @@ it contains Square objects (which contain a piece, or is empty).
 #include <memory>
 #include <vector>
 #include "Move.h"
+#include "GameStatus.h"
 
 class Board
 {
@@ -33,7 +34,7 @@ public:
 
 		Board* hardCopy();
 		
-		int evaluateBoard(PieceColor colour, std::vector<Move> moves);
+		int evaluateBoard(PieceColor colour, Move* moves, int movesCount);
 };
 
 #endif

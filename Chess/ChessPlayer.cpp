@@ -75,7 +75,8 @@ Move ChessPlayer::chooseAIMove()
 		vector<std::shared_ptr<Move>> moves = getValidMovesForPiece(p);
 		for (std::shared_ptr<Move> m : moves)
 		{
-			int move = MiniMax(*m.get(), vector<Move>(), 6, 0, 0, true);
+			Move movArr[6];
+			int move = MiniMax(*m.get(), movArr, 0, 6, 0, 0, true);
 			std::pair<int, int> originPos = m.get()->getOriginPosition();
 			std::pair<int, int> destinationPos = m.get()->getDestinationPosition();
 			if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
@@ -102,12 +103,14 @@ Move ChessPlayer::chooseAIMove()
 	//return false; // if there are no moves to make return false
 }
 
-int ChessPlayer::MiniMax(Move m, vector<Move> moves, int depth, int alpha, int beta, bool maximisingPlayer)
+int ChessPlayer::MiniMax(Move m, Move* moves, int depth, int depthLimit, int alpha, int beta, bool maximisingPlayer)
 {
-	if (depth <= 0)
+	moves[depth] = m;
+
+	if (depth >= depthLimit - 1)
 	{
 		// return evaluation of piece
-		return m_pBoard->evaluateBoard(m_colour, moves);
+		return m_pBoard->evaluateBoard(m_colour, moves, depthLimit);
 	}
 
 	// find valid moves for the current piece
@@ -122,9 +125,7 @@ int ChessPlayer::MiniMax(Move m, vector<Move> moves, int depth, int alpha, int b
 		int maxEval = INT_MIN;
 		for (std::shared_ptr<Move> m : pieceMoves)
 		{
-			vector<Move> movesTemp = moves;
-			movesTemp.push_back(*m.get());
-			int move = MiniMax(*m.get(), movesTemp, depth - 1, alpha, beta, false);
+			int move = MiniMax(*m.get(), moves, depth + 1, depthLimit, alpha, beta, false);
 			int eval = move;
 			if (eval > maxEval)
 			{
@@ -142,9 +143,7 @@ int ChessPlayer::MiniMax(Move m, vector<Move> moves, int depth, int alpha, int b
 		int minEval = INT_MAX;
 		for (std::shared_ptr<Move> m : pieceMoves)
 		{
-			vector<Move> movesTemp = moves;
-			movesTemp.push_back(*m.get());
-			int move = MiniMax(*m.get(), movesTemp, depth - 1, alpha, beta, true);
+			int move = MiniMax(*m.get(), moves, depth + 1, depthLimit, alpha, beta, true);
 			int eval = move;
 			if (eval < minEval)
 			{
