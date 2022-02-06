@@ -88,113 +88,60 @@ Move ChessPlayer::chooseAIMove()
 			{
 				if (moveScore > bestScore)
 				{
-					//if (moveScore != INT_MIN && moveScore != INT_MAX)
-					//{
-						scores.push_back(moveScore);
+					scores.push_back(moveScore);
 
-						for (int i = 0; i < m_previousMoves.size(); i++)
+					bool clearToMove = true;
+					for (int i = 0; i < m_previousMoves.size(); i++)
+					{
+						if (moveScore != INT_MIN && moveScore != INT_MAX)
 						{
-							if (moveScore != INT_MIN && moveScore != INT_MAX)
+							if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
 							{
-								if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
-								{
-									if (i == (m_previousMoves.size() - 1))
-									{
-										bestScore = moveScore;
-										bestMove = move;
-									}
-								}
-								/*else
+								if (i == (m_previousMoves.size() - 1) && clearToMove)
 								{
 									bestScore = moveScore;
 									bestMove = move;
-									break;
-								}*/
+								}
 							}
 							else
 							{
-								if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
-								{
-									if (i == (m_previousMoves.size() - 1))
-									{
-										backupBestScore = moveScore;
-										backupBestMove = move;
-									}
-								}
-								/*else
-								{
-									backupBestScore = moveScore;
-									backupBestMove = move;
-									break;
-								}*/
+								clearToMove = false;
 							}
 						}
-						if (m_previousMoves.size() == 0)
+						else
 						{
-							if (moveScore != INT_MIN && moveScore != INT_MAX)
-							{
-								bestScore = moveScore;
-								bestMove = move;
-							}
-							else
+							if (i == (m_previousMoves.size() - 1))
 							{
 								backupBestScore = moveScore;
 								backupBestMove = move;
 							}
 						}
-
-						/*if (m_previousMove.getMovedPiece() != NULL)
+						/*else
 						{
-							if (move.getDestinationPosition() != m_previousMove.getOriginPosition())
+							if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
 							{
-								if (m_secondPreviousMove.getMovedPiece() != NULL)
-								{
-									if (move.getDestinationPosition() != m_secondPreviousMove.getOriginPosition())
-									{
-										bestScore = moveScore;
-										bestMove = move;
-									}
-								}
-								else
-								{
-									bestScore = moveScore;
-									bestMove = move;
-								}
-							}
-						}
-						else
-						{
-							bestScore = moveScore;
-							bestMove = move;
-						}*/
-					//}
-					/*else
-					{
-						if (m_previousMove.getMovedPiece() != NULL)
-						{
-							if (move.getDestinationPosition() != m_previousMove.getOriginPosition())
-							{
-								if (m_secondPreviousMove.getMovedPiece() != NULL)
-								{
-									if (move.getDestinationPosition() != m_secondPreviousMove.getOriginPosition())
-									{
-										backupBestScore = moveScore;
-										backupBestMove = move;
-									}
-								}
-								else
+								if (i == (m_previousMoves.size() - 1))
 								{
 									backupBestScore = moveScore;
 									backupBestMove = move;
 								}
 							}
+						}*/
+					}
+
+					if (m_previousMoves.size() == 0)
+					{
+						if (moveScore != INT_MIN && moveScore != INT_MAX)
+						{
+							bestScore = moveScore;
+							bestMove = move;
 						}
 						else
 						{
 							backupBestScore = moveScore;
 							backupBestMove = move;
 						}
-					}*/
+					}
 				}
 			}
 		}
@@ -222,23 +169,36 @@ Move ChessPlayer::chooseAIMove()
 		{
 			return bestMove;
 		}
-		else
+		/*else
 		{
 			return backupBestMove;
-		}
+		}*/
 	}
 	else
 	{
-		std::cout << "unable to find move" << std::endl;
+		std::cout << "\n\nUnable to find move\n\n" << std::endl;
+
+		// cannot find valid move so pick random move
+		vector<std::shared_ptr<Move>> moves;
+		for (PieceInPosition p : vPieces)
+		{
+			vector<std::shared_ptr<Move>> movesForPiece = getValidMovesForPiece(p);
+			for (std::shared_ptr<Move> m : movesForPiece)
+			{
+				moves.push_back(m);
+			}
+		}
+		int index = rand() % moves.size();
+
 
 		if (m_previousMoves.size() + 1 > m_maxPrevMoves)
 		{
 			m_previousMoves.erase(m_previousMoves.begin());
 		}
-		m_previousMoves.push_back(backupBestMove);
+		m_previousMoves.push_back(*moves[index].get());
 		/*m_secondPreviousMove = m_previousMove;
 		m_previousMove = backupBestMove;*/
-		return backupBestMove;
+		return *moves[index].get();
 	}
 
 	return Move(); // returning an empty Move will show that a move was not taken

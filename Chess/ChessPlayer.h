@@ -52,7 +52,7 @@ private:
 	//Move		m_previousMove = Move();
 	//Move		m_secondPreviousMove = Move();
 	vector<Move> m_previousMoves;
-	const int m_maxPrevMoves = 5;
+	const int m_maxPrevMoves = 10;
 
 	int MiniMax(Move m, Move* moves, int depth, int depthLimit, int alpha, int beta, bool maximisingPlayer);
 
