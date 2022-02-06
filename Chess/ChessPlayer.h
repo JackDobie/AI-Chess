@@ -48,6 +48,11 @@ private:
 	GameStatus* m_pGameStatus;
 	Gameplay*	m_pGamePlay;
 	bool		m_bAI;
+	const int	m_depthLimit = 10;
+	//Move		m_previousMove = Move();
+	//Move		m_secondPreviousMove = Move();
+	vector<Move> m_previousMoves;
+	const int m_maxPrevMoves = 5;
 
 	int MiniMax(Move m, Move* moves, int depth, int depthLimit, int alpha, int beta, bool maximisingPlayer);
 

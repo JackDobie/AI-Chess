@@ -41,5 +41,20 @@ MoveType Move::getType()
 
 bool Move::operator==(const Move& other)
 {
-	return (this->fromRow == other.fromRow) && (this->fromCol == other.fromCol) && (this->movePiece->getType() == other.movePiece->getType()) && (this->movePiece->getColor() == other.movePiece->getColor()) && (this->toRow == other.toRow) && (this->toCol == other.toCol) && (this->type == other.type) && (this->capturedPiece->getType() == other.capturedPiece->getType()) && (this->capturedPiece->getColor() == other.capturedPiece->getColor());
+	bool fromrow = (this->fromRow == other.fromRow);
+	bool fromcol = (this->fromCol == other.fromCol);
+	bool movepiecetype = (this->movePiece->getType() == other.movePiece->getType());
+	bool movepiececolour = (this->movePiece->getColor() == other.movePiece->getColor());
+	bool torow = (this->toRow == other.toRow);
+	bool tocol = (this->toCol == other.toCol);
+	bool type = (this->type == other.type);
+	//if(this->capturedPiece == nullptr)
+	//bool capturedtype = (this->capturedPiece->getType() == other.capturedPiece->getType());
+	//bool capturedcolour = (this->capturedPiece->getColor() == other.capturedPiece->getColor());
+	return fromrow && fromcol && movepiecetype && movepiececolour && torow && tocol && type && (this->capturedPiece == other.capturedPiece);// capturedtype&& capturedcolour;
+}
+
+bool Move::operator!=(const Move& other)
+{
+	return !(operator==(other));
 }

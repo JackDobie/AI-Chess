@@ -3,6 +3,7 @@
 #include "Chess\Gameplay.h"
 #include "Chess\Board.h"
 #include "Chess\Piece.h"
+#include <iostream>
 
 using namespace std;
 
@@ -70,33 +71,174 @@ Move ChessPlayer::chooseAIMove()
 
 	int bestScore = INT_MIN;
 	Move bestMove = Move();
+	int backupBestScore = INT_MIN;
+	Move backupBestMove = Move();
 	for (PieceInPosition p : vPieces)
 	{
 		vector<std::shared_ptr<Move>> moves = getValidMovesForPiece(p);
+		vector<int> scores;
 		for (std::shared_ptr<Move> m : moves)
 		{
-			Move movArr[6];
-			int move = MiniMax(*m.get(), movArr, 0, 6, 0, 0, true);
-			std::pair<int, int> originPos = m.get()->getOriginPosition();
-			std::pair<int, int> destinationPos = m.get()->getDestinationPosition();
+			Move move = *m.get();
+			Move* movArr = new Move[m_depthLimit];
+			int moveScore = MiniMax(move, movArr, 0, m_depthLimit, 0, 0, true);
+			std::pair<int, int> originPos = move.getOriginPosition();
+			std::pair<int, int> destinationPos = move.getDestinationPosition();
 			if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
 			{
-				if (move > bestScore)
+				if (moveScore > bestScore)
 				{
-					bestScore = move;
-					bestMove = *m.get();
+					//if (moveScore != INT_MIN && moveScore != INT_MAX)
+					//{
+						scores.push_back(moveScore);
+
+						for (int i = 0; i < m_previousMoves.size(); i++)
+						{
+							if (moveScore != INT_MIN && moveScore != INT_MAX)
+							{
+								if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
+								{
+									if (i == (m_previousMoves.size() - 1))
+									{
+										bestScore = moveScore;
+										bestMove = move;
+									}
+								}
+								/*else
+								{
+									bestScore = moveScore;
+									bestMove = move;
+									break;
+								}*/
+							}
+							else
+							{
+								if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
+								{
+									if (i == (m_previousMoves.size() - 1))
+									{
+										backupBestScore = moveScore;
+										backupBestMove = move;
+									}
+								}
+								/*else
+								{
+									backupBestScore = moveScore;
+									backupBestMove = move;
+									break;
+								}*/
+							}
+						}
+						if (m_previousMoves.size() == 0)
+						{
+							if (moveScore != INT_MIN && moveScore != INT_MAX)
+							{
+								bestScore = moveScore;
+								bestMove = move;
+							}
+							else
+							{
+								backupBestScore = moveScore;
+								backupBestMove = move;
+							}
+						}
+
+						/*if (m_previousMove.getMovedPiece() != NULL)
+						{
+							if (move.getDestinationPosition() != m_previousMove.getOriginPosition())
+							{
+								if (m_secondPreviousMove.getMovedPiece() != NULL)
+								{
+									if (move.getDestinationPosition() != m_secondPreviousMove.getOriginPosition())
+									{
+										bestScore = moveScore;
+										bestMove = move;
+									}
+								}
+								else
+								{
+									bestScore = moveScore;
+									bestMove = move;
+								}
+							}
+						}
+						else
+						{
+							bestScore = moveScore;
+							bestMove = move;
+						}*/
+					//}
+					/*else
+					{
+						if (m_previousMove.getMovedPiece() != NULL)
+						{
+							if (move.getDestinationPosition() != m_previousMove.getOriginPosition())
+							{
+								if (m_secondPreviousMove.getMovedPiece() != NULL)
+								{
+									if (move.getDestinationPosition() != m_secondPreviousMove.getOriginPosition())
+									{
+										backupBestScore = moveScore;
+										backupBestMove = move;
+									}
+								}
+								else
+								{
+									backupBestScore = moveScore;
+									backupBestMove = move;
+								}
+							}
+						}
+						else
+						{
+							backupBestScore = moveScore;
+							backupBestMove = move;
+						}
+					}*/
 				}
 			}
 		}
+		for (int i = 0; i < scores.size(); i++)
+		{
+			std::cout << scores[i] << ", ";
+		}
 	}
-	if (bestScore != INT_MIN)
+	if (bestScore != INT_MIN && bestScore != INT_MAX)
 	{
+		std::cout << "\nBest score: " << bestScore << std::endl;
+		
+		/*m_secondPreviousMove = m_previousMove;
+		m_previousMove = bestMove;*/
+		if (m_previousMoves.size() + 1 > m_maxPrevMoves)
+		{
+			m_previousMoves.erase(m_previousMoves.begin());
+		}
+		m_previousMoves.push_back(bestMove);
+
 		std::pair<int, int> originPos = bestMove.getOriginPosition();
 		std::pair<int, int> destinationPos = bestMove.getDestinationPosition();
+		//return backupBestMove;
 		if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
 		{
 			return bestMove;
 		}
+		else
+		{
+			return backupBestMove;
+		}
+	}
+	else
+	{
+		std::cout << "unable to find move" << std::endl;
+
+		if (m_previousMoves.size() + 1 > m_maxPrevMoves)
+		{
+			m_previousMoves.erase(m_previousMoves.begin());
+		}
+		m_previousMoves.push_back(backupBestMove);
+		/*m_secondPreviousMove = m_previousMove;
+		m_previousMove = backupBestMove;*/
+		return backupBestMove;
 	}
 
 	return Move(); // returning an empty Move will show that a move was not taken
@@ -136,7 +278,15 @@ int ChessPlayer::MiniMax(Move m, Move* moves, int depth, int depthLimit, int alp
 			if (beta <= alpha)
 				break;
 		}
-		return maxEval;
+		/*if (depth == 0)
+		{
+			if (maxEval != INT_MIN)
+				return maxEval;
+			else
+				return 0;
+		}
+		else*/
+			return maxEval;
 	}
 	else
 	{
@@ -154,7 +304,15 @@ int ChessPlayer::MiniMax(Move m, Move* moves, int depth, int depthLimit, int alp
 			if (beta <= alpha)
 				break;
 		}
-		return minEval;
+		/*if (depth == 0)
+		{
+			if (minEval != INT_MAX)
+				return minEval;
+			else
+				return 0;
+		}
+		else*/
+			return minEval;
 	}
 }
 

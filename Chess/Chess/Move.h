@@ -31,6 +31,7 @@ class Move
 		std::shared_ptr<Piece> getCapturedPiece();
 		MoveType getType();
 		bool operator==(const Move& other);
+		bool operator!=(const Move& other);
 };
 
 #endif
