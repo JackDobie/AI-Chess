@@ -23,7 +23,7 @@ using namespace std;
 #define BUTTON_WIDTH 200
 #define BUTTON_HEIGHT 75
 
-#define SLEEP_TIME_MILLISECONDS 100 /// 1000 = 1 second
+#define SLEEP_TIME_MILLISECONDS 0 /// 1000 = 1 second
 
 /** Prototype **/
 void keyFunction(unsigned char key, int x, int y);
@@ -169,9 +169,6 @@ void drawMoveToSquare()
 */
 void drawChessBoard()
 {
-	//todo remove
-	return;
-
     glPushMatrix();
         /**Drawing bottom of the chess board*/
         glNormal3fv(normal_valid_move);
@@ -827,6 +824,7 @@ void keyFunction(unsigned char key, int x, int y)
 
 void initialize()
 {
+    srand((unsigned int)time(NULL));
 	Pawn.Initialise("model/pawn_black.jpg", "model/pawn_white.jpg");
 	Rook.Initialise("model/rook_black.jpg", "model/rook_white.jpg");
 	Knight.Initialise("model/knight_black.jpg", "model/knight_white.jpg");
@@ -865,7 +863,6 @@ void newGame()
 
 int main(int argc, char *argv[])
 {
-
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);

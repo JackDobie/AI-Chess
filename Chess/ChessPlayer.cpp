@@ -70,9 +70,7 @@ Move ChessPlayer::chooseAIMove()
 	unsigned int piecesAvailable = getAllLivePieces(vPieces);
 
 	int bestScore = INT_MIN;
-	Move bestMove = Move();
-	int backupBestScore = INT_MIN;
-	Move backupBestMove = Move();
+	Move bestMove;
 	for (PieceInPosition p : vPieces)
 	{
 		vector<std::shared_ptr<Move>> moves = getValidMovesForPiece(p);
@@ -81,21 +79,24 @@ Move ChessPlayer::chooseAIMove()
 		{
 			Move move = *m.get();
 			Move* movArr = new Move[m_depthLimit];
-			int moveScore = MiniMax(move, movArr, 0, m_depthLimit, 0, 0, true);
+			int moveScore = MiniMax(move, movArr, 0, m_depthLimit, INT_MIN, INT_MAX, true);
 			std::pair<int, int> originPos = move.getOriginPosition();
 			std::pair<int, int> destinationPos = move.getDestinationPosition();
 			if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
 			{
 				if (moveScore > bestScore)
 				{
-					scores.push_back(moveScore);
+					if (moveScore > INT_MIN && moveScore < INT_MAX)
+					{
+						scores.push_back(moveScore);
+					}
 
 					bool clearToMove = true;
 					for (int i = 0; i < m_previousMoves.size(); i++)
 					{
-						if (moveScore != INT_MIN && moveScore != INT_MAX)
+						if (moveScore > INT_MIN && moveScore < INT_MAX)
 						{
-							if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
+							if (move.getDestinationPosition() != m_previousMoves[i].getDestinationPosition())
 							{
 								if (i == (m_previousMoves.size() - 1) && clearToMove)
 								{
@@ -108,38 +109,14 @@ Move ChessPlayer::chooseAIMove()
 								clearToMove = false;
 							}
 						}
-						else
-						{
-							if (i == (m_previousMoves.size() - 1))
-							{
-								backupBestScore = moveScore;
-								backupBestMove = move;
-							}
-						}
-						/*else
-						{
-							if (move.getDestinationPosition() != m_previousMoves[i].getOriginPosition())
-							{
-								if (i == (m_previousMoves.size() - 1))
-								{
-									backupBestScore = moveScore;
-									backupBestMove = move;
-								}
-							}
-						}*/
 					}
 
 					if (m_previousMoves.size() == 0)
 					{
-						if (moveScore != INT_MIN && moveScore != INT_MAX)
+						if (moveScore > INT_MIN && moveScore < INT_MAX)
 						{
 							bestScore = moveScore;
 							bestMove = move;
-						}
-						else
-						{
-							backupBestScore = moveScore;
-							backupBestMove = move;
 						}
 					}
 				}
@@ -150,9 +127,9 @@ Move ChessPlayer::chooseAIMove()
 			std::cout << scores[i] << ", ";
 		}
 	}
-	if (bestScore != INT_MIN && bestScore != INT_MAX)
+	if (bestScore > INT_MIN && bestScore < INT_MAX)
 	{
-		std::cout << "\nBest score: " << bestScore << std::endl;
+		std::cout << "\nBest score: " << bestScore << "\n---------------" << std::endl;
 		
 		/*m_secondPreviousMove = m_previousMove;
 		m_previousMove = bestMove;*/
@@ -176,7 +153,7 @@ Move ChessPlayer::chooseAIMove()
 	}
 	else
 	{
-		std::cout << "\n\nUnable to find move\n\n" << std::endl;
+		std::cout << "\n\nUnable to find move! Best score: "<< bestScore << "\n" << std::endl;
 
 		// cannot find valid move so pick random move
 		vector<std::shared_ptr<Move>> moves;
@@ -188,8 +165,9 @@ Move ChessPlayer::chooseAIMove()
 				moves.push_back(m);
 			}
 		}
-		int index = rand() % moves.size();
+		std::cout << moves.size() << std::endl;
 
+		int index = rand() % moves.size();
 
 		if (m_previousMoves.size() + 1 > m_maxPrevMoves)
 		{

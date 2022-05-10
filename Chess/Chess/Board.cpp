@@ -43,8 +43,6 @@ Board* Board::hardCopy()
 	return pBoard;
 }
 
-// TODO: change this so it evaluates board after x moves. currently just evaluates current board
-// possibly pass in a list of moves and then apply them?
 int Board::evaluateBoard(PieceColor colour, Move* moves, int movesCount)
 {
 	// save the squares of the current board
