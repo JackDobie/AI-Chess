@@ -96,6 +96,7 @@ bool    board_rotating = true;
 bool    ai_moving = false;
 int     rotation = 0;
 bool    check = false, checkMate = false;
+bool    draw = false;
 bool    closeGame = false;
 bool	needPromote = false;
 
@@ -524,6 +525,12 @@ void endOfTurn()
 	{
 		check = true;
 	}
+
+    if (chess->inDrawState())
+    {
+        draw = true;
+    }
+
 	board_rotating = true;
 	updateTurn(chess->getTurnColor());
 }
@@ -539,7 +546,7 @@ void newAITurn()
 		player = chess->getWhitePlayer();
 	}
 	
-	if (!player->isAI() || chess->inCheckMateState()) 
+	if (!player->isAI() || chess->inCheckMateOrDrawState()) 
 		return;
 
 	// decide and make the move
@@ -636,28 +643,26 @@ void displayFunction()
 				showWord(-200, WINDOW_HEIGHT/2-24, "Are you sure to retry? Yes (O)  or  No (X)");
 			else
 			{
+                string s = chess->getTurnColor() == PieceColor::BLACK ? "WHITE PLAYER" : "BLACK PLAYER";
+
 				if(check)
 				{
-					string s = chess->getTurnColor() == PieceColor::BLACK?"BLACK PIECE" : "WHITE PIECE";
-					showWord(-150, WINDOW_HEIGHT/2-24, s+" CHECKED!");
+					showWord(-150, WINDOW_HEIGHT/2-24, s + " CHECKED!");
 				}
-				if(checkMate)
+
+				if (checkMate)
 				{
-					string s = chess->getTurnColor() == PieceColor::BLACK ? "WHITE PLAYER" : "BLACK PLAYER";
-					if (chess->inCheckState())
-					{
-						showWord(-100, WINDOW_HEIGHT / 2 - 24, "CHECK MATE!");
-						showWord(-140, WINDOW_HEIGHT / 2 - 50, s + " WIN!");
-						showWord(-150, -WINDOW_HEIGHT / 2 + 50, "Do you want to play again?");
-						showWord(-120, -WINDOW_HEIGHT / 2 + 25, "Yes (O)  or  No (X)");
-					}
-					else
-					{
-						showWord(-100, WINDOW_HEIGHT / 2 - 24, "STALE MATE!");
-						showWord(-140, WINDOW_HEIGHT / 2 - 50, " DRAW!");
-						showWord(-150, -WINDOW_HEIGHT / 2 + 50, "Do you want to play again?");
-						showWord(-120, -WINDOW_HEIGHT / 2 + 25, "Yes (O)  or  No (X)");
-					}
+					showWord(-100, WINDOW_HEIGHT / 2 - 24, "CHECK MATE!");
+					showWord(-140, WINDOW_HEIGHT / 2 - 50, s + " WIN!");
+					showWord(-150, -WINDOW_HEIGHT / 2 + 50, "Do you want to play again?");
+					showWord(-120, -WINDOW_HEIGHT / 2 + 25, "Yes (O)  or  No (X)");
+				}
+				else if(draw)
+				{
+					showWord(-100, WINDOW_HEIGHT / 2 - 24, "STALE MATE!");
+					showWord(-140, WINDOW_HEIGHT / 2 - 50, " DRAW!");
+					showWord(-150, -WINDOW_HEIGHT / 2 + 50, "Do you want to play again?");
+					showWord(-120, -WINDOW_HEIGHT / 2 + 25, "Yes (O)  or  No (X)");
 				}
 			}
 		}
@@ -764,10 +769,10 @@ void keyFunction(unsigned char key, int x, int y)
             else verify = true;
             break;
         case 'o': case 'O':
-            if(checkMate || verify) {delete chess; newGame(); verify = false;}
+            if(checkMate || verify || draw) {delete chess; newGame(); verify = false;}
             break;
         case 'x': case 'X':
-			if(checkMate) 
+			if(checkMate || draw) 
 			{ 
 				closeGame = true; 
 				delete chess;
@@ -858,6 +863,7 @@ void newGame()
     inGame = true;
     check = false;
     checkMate = false;
+    draw = false;
     updateTurn(chess->getTurnColor());
 }
 

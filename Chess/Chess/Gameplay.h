@@ -24,6 +24,8 @@ class Gameplay
 		static std::vector<std::shared_ptr<Move>> getValidMoves(GameStatus* status, Board* board, std::shared_ptr<Piece> piece, int fromRow, int fromCol);
 		static bool isCheckState(GameStatus* status, Board* board, PieceColor color);
 		static bool isCheckMateState(GameStatus* status, Board* board, PieceColor color);
+		static bool isCheckMateOrDrawState(GameStatus* status, Board* board, PieceColor color);
+		static bool isDrawState(GameStatus* status, Board* board, PieceColor color);
 		static int allValidMoveCount(GameStatus* status, Board* board, PieceColor color);
 		static bool pawnPromotion(Board* board, int row, int col, PieceType promoteTo);
 };

@@ -48,9 +48,9 @@ private:
 	GameStatus* m_pGameStatus;
 	Gameplay*	m_pGamePlay;
 	bool		m_bAI;
-	const int	m_depthLimit = 5;
-	//Move		m_previousMove = Move();
-	//Move		m_secondPreviousMove = Move();
+	const int	m_depthLimit = 4;
+
+	// holds previous moves. stops ai from repeating moves up to "m_maxPrevMoves" moves ago
 	vector<Move> m_previousMoves;
 	const int m_maxPrevMoves = 10;
 

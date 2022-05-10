@@ -915,6 +915,16 @@ bool Gameplay::isCheckState(GameStatus* status, Board* board, PieceColor color)
 
 bool Gameplay::isCheckMateState(GameStatus* status, Board* board, PieceColor color)
 {
+	return allValidMoveCount(status, board, color) == 0;
+}
+
+bool Gameplay::isCheckMateOrDrawState(GameStatus* status, Board* board, PieceColor color)
+{
+	return (isCheckMateState(status, board, color) || isDrawState(status, board, color));
+}
+
+bool Gameplay::isDrawState(GameStatus* status, Board* board, PieceColor color)
+{
 	std::shared_ptr<Piece> actPiece;
 	std::vector<std::shared_ptr<Piece>> blackPieces;
 	std::vector<std::shared_ptr<Piece>> whitePieces;
@@ -942,10 +952,7 @@ bool Gameplay::isCheckMateState(GameStatus* status, Board* board, PieceColor col
 	}
 
 	// if both sides have less than two pieces, count as draw
-	bool draw = ((blackPieces.size() <= 2) & (whitePieces.size() <= 2));
-
-	bool checkmate = (allValidMoveCount(status, board, color) == 0);
-	return (checkmate || draw);
+	return ((blackPieces.size() <= 2) && (whitePieces.size() <= 2));
 }
 
 int Gameplay::allValidMoveCount(GameStatus* status, Board* board, PieceColor color)

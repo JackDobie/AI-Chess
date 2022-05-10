@@ -157,6 +157,16 @@ bool Game::inCheckMateState()
 	return gameplay->isCheckMateState(status, board, getTurnColor());
 }
 
+bool Game::inCheckMateOrDrawState()
+{
+	return gameplay->isCheckMateOrDrawState(status, board, getTurnColor());
+}
+
+bool Game::inDrawState()
+{
+	return gameplay->isDrawState(status, board, getTurnColor());
+}
+
 int Game::getTurn()
 {
 	return turn;
