@@ -165,7 +165,6 @@ Move ChessPlayer::chooseAIMove()
 				moves.push_back(m);
 			}
 		}
-		std::cout << moves.size() << std::endl;
 
 		int index = rand() % moves.size();
 

@@ -637,7 +637,52 @@ void displayFunction()
 
 			if(needPromote)
 			{
+                int r = -1;
+
 				showWord(-200, WINDOW_HEIGHT/2-24, "Promote to: (Q) Queen | (R) Rook | (B) Bishop | (K) Knight");
+                switch (chess->getTurnColor())
+                {
+                case PieceColor::BLACK:
+                    if (chess->getBlackPlayer()->isAI())
+                    {
+                        r = rand() % 4;
+                    }
+                    break;
+                case PieceColor::WHITE:
+                    if (chess->getWhitePlayer()->isAI())
+                    {
+                        r = rand() % 4;
+                    }
+                    break;
+                default:
+                    break;
+                }
+
+                switch (r)
+                {
+                case 0:
+                    // queen
+                    chess->promote(moveToRow, moveToCol, PieceType::QUEEN);
+                    endOfTurn();
+                    break;
+                case 1:
+                    // rook
+                    chess->promote(moveToRow, moveToCol, PieceType::ROOK);
+                    endOfTurn();
+                    break;
+                case 2:
+                    // bishop
+                    chess->promote(moveToRow, moveToCol, PieceType::BISHOP);
+                    endOfTurn();
+                    break;
+                case 3:
+                    // knight
+                    chess->promote(moveToRow, moveToCol, PieceType::KNIGHT);
+                    endOfTurn();
+                    break;
+                default:
+                    break;
+                }            
 			}
 			else if(verify) 
 				showWord(-200, WINDOW_HEIGHT/2-24, "Are you sure to retry? Yes (O)  or  No (X)");
@@ -829,7 +874,6 @@ void keyFunction(unsigned char key, int x, int y)
 
 void initialize()
 {
-    srand((unsigned int)time(NULL));
 	Pawn.Initialise("model/pawn_black.jpg", "model/pawn_white.jpg");
 	Rook.Initialise("model/rook_black.jpg", "model/rook_white.jpg");
 	Knight.Initialise("model/knight_black.jpg", "model/knight_white.jpg");
@@ -869,6 +913,7 @@ void newGame()
 
 int main(int argc, char *argv[])
 {
+    srand((unsigned int)time(NULL));
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
