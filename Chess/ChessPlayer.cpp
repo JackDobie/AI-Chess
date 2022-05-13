@@ -80,6 +80,7 @@ Move ChessPlayer::chooseAIMove()
 			Move move = *m.get();
 			Move* movArr = new Move[m_depthLimit];
 			int moveScore = MiniMax(move, movArr, 0, m_depthLimit, INT_MIN, INT_MAX, true);
+
 			std::pair<int, int> originPos = move.getOriginPosition();
 			std::pair<int, int> destinationPos = move.getDestinationPosition();
 			if (originPos != std::pair<int, int>() && destinationPos != std::pair<int, int>())
@@ -193,7 +194,7 @@ int ChessPlayer::MiniMax(Move m, Move* moves, int depth, int depthLimit, int alp
 	}
 
 	// find valid moves for the current piece
-	PieceInPosition movedPiece = PieceInPosition();// = m.getMovedPiece().get();
+	PieceInPosition movedPiece = PieceInPosition();
 	movedPiece.piece = m.getMovedPiece();
 	movedPiece.row = m.getDestinationPosition().first;
 	movedPiece.col = m.getDestinationPosition().second;
@@ -215,15 +216,7 @@ int ChessPlayer::MiniMax(Move m, Move* moves, int depth, int depthLimit, int alp
 			if (beta <= alpha)
 				break;
 		}
-		/*if (depth == 0)
-		{
-			if (maxEval != INT_MIN)
-				return maxEval;
-			else
-				return 0;
-		}
-		else*/
-			return maxEval;
+		return maxEval;
 	}
 	else
 	{
@@ -241,15 +234,7 @@ int ChessPlayer::MiniMax(Move m, Move* moves, int depth, int depthLimit, int alp
 			if (beta <= alpha)
 				break;
 		}
-		/*if (depth == 0)
-		{
-			if (minEval != INT_MAX)
-				return minEval;
-			else
-				return 0;
-		}
-		else*/
-			return minEval;
+		return minEval;
 	}
 }
 
